@@ -7,21 +7,13 @@ BusGuide_bot は、緯度・経度をクエリとして送ると、その場所�
 
 以下の形式でアクセスします：
 ```
-http://localhost:1111/query?x=<緯度>&y=<経度>&auth=<パスワード>&mode=<モード>
+http://localhost:1111/query?x=<緯度>&y=<経度>&auth=<パスワード>&mode=<モード>&jcc=<yes or no>
 
 - x : 緯度
 - y : 経度
 - auth : パスワード
 - mode : 出力形式（roma でローマ字、nomal,無指定 で漢字・ひらがな混じり）
-```
-出力例:
-```
-http://localhost:1111/query?x=<緯度>&y=<経度>&auth=<パスワード>&mode=<モード>
-
-- x : 緯度
-- y : 経度
-- auth : パスワード
-- mode : 出力形式（romaji でローマ字、nomal,無指定 で漢字・ひらがな混じり）
+- jcc : genzaichi toukyouto choufushi jcc nanbaa ichi maru maru kyuuみたいな感じで出力してくれる
 ```
 
 ## コード構成
