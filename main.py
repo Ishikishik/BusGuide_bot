@@ -13,7 +13,7 @@ import pykakasi
 import os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-from library import coordinates2guid, to_romaji
+from library import coordinates2guid, to_romaji, returnjcc
 
 app = Flask(__name__)
 load_dotenv()
@@ -29,17 +29,22 @@ def query():
     y = request.args.get("y")
     auth = request.args.get("auth")
     mode = request.args.get("mode", "nomal")  # デフォルトはローマ字
+    jcc = request.args.get("jcc", "no")
 
     if auth != valid_auth_code:
         return "Invalid authentication", 403
 
-    # mode によって返す形式を切り替え
+    # jcc = yes の場合は JCC モード
+    if jcc == "yes":
+        return returnjcc(x, y)
+
+    # 通常モード
     if mode == "roma":
         return to_romaji(coordinates2guid(x, y))
     elif mode == "nomal":
-        return coordinates2guid(x,y)
+        return coordinates2guid(x, y)
     else:
         return "Invalid mode", 400
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=1111, debug=True)
+    app.run(host="0.0.0.0", port=5555, debug=True)
