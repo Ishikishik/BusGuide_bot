@@ -35,9 +35,9 @@ def query():
 
     # mode によって返す形式を切り替え
     if mode == "roma":
-        return "nihon"
+        return to_romaji(coordinates2guid(x, y))
     elif mode == "nomal":
-        return "日本"
+        return coordinates2guid(x,y)
     else:
         return "Invalid mode", 400
 
