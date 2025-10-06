@@ -13,7 +13,7 @@ import pykakasi
 import os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-from library import coordinates2guid, to_romaji, returnjcc
+from library import coordinates2guid, to_romaji, returnjcc, insert_commas
 
 app = Flask(__name__)
 load_dotenv()
@@ -40,7 +40,7 @@ def query():
 
     # 通常モード
     if mode == "roma":
-        return to_romaji(coordinates2guid(x, y))
+        return to_romaji(insert_commas(coordinates2guid(x, y)))
     elif mode == "nomal":
         return coordinates2guid(x, y)
     else:

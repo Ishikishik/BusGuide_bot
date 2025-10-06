@@ -5,6 +5,8 @@ import google.generativeai as genai
 from geopy.geocoders import Nominatim
 #to_romaji
 import pykakasi
+#insert_commas
+from tinysegmenter import TinySegmenter
 #jcc
 import json
 
@@ -20,10 +22,17 @@ def coordinates2guid(lat, lon): #入力:緯度経度、出力:地名とガイド
     genai.configure(api_key=api_key)
 
     # Gemini モデルを設定
-    model = genai.GenerativeModel("gemini-flash-latest")
-    prompt = f"{address} の都市名と名物を25文字程度で現在地は何々、名物は何々でございますの口調で教えてください"
-    response = model.generate_content(prompt)
-
+    model = genai.GenerativeModel("gemini-2.5-flash-lite")
+    prompt = f"あなたは観光案内役です。以下の情報をもとに、日本の現在地と名物を紹介してください：\n- 現在地: {address}\n- 紹介文は15文字程度\n- 口調は「現在地は～、名物は～でございます」の形式"
+    response = model.generate_content(
+    prompt,
+    generation_config=genai.types.GenerationConfig(
+        # Only one candidate for now.
+        candidate_count=1,
+        max_output_tokens=20,
+        temperature=0.,
+    ),
+)
     return response.text
 # 使用例
 #print(coordinates2guid(34.07, 132.99))
@@ -39,7 +48,19 @@ def to_romaji(text: str) -> str: #入力:漢字およびひらがな、出力:�
 #使用例
 #print(to_romaji("愛媛県西条市"))
 
-
+#lsiのために句点を増やす
+segmenter = TinySegmenter()
+def insert_commas(text: str) -> str:
+    text = text.replace(",", "/")
+    text = text.replace("、", "/")
+    words = segmenter.tokenize(text)
+    new_text = "/"
+    for w in words:
+        new_text += w
+        # 「は」「が」「でございます」などの後に句読点を挿入
+        if w in ["は", "が", "です", "でございます"]:
+            new_text += "/"
+    return new_text
 
 
 #以下jccに関するコード群#################################################
@@ -116,7 +137,7 @@ def extract_jcc_from_city(prefecture: str, city: str, jcc_dict: dict) -> str:
     pref_en = to_romaji(prefecture)
     city_en = to_romaji(city)
     code_read = num_to_reading(str(code))
-    return f"genzaichi {pref_en} {city_en} jcc nanbaa {code_read}"
+    return f"genzaichi/ {pref_en} {city_en} /jcc nanbaa/ {code_read}"
 
 def returnjcc(lat, lon):
     prefecture, city = get_city_pref(lat, lon)
