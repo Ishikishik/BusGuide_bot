@@ -52,7 +52,7 @@ def to_romaji(text: str) -> str: #入力:漢字およびひらがな、出力:�
 segmenter = TinySegmenter()
 def insert_commas(text: str) -> str:
     text = text.replace(",", "/")
-    text = text.replace("、", "/")
+    text = text.replace(",", "/")
     words = segmenter.tokenize(text)
     new_text = "/"
     for w in words:
