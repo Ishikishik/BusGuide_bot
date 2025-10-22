@@ -23,16 +23,29 @@ def coordinates2guid(lat, lon): #入力:緯度経度、出力:地名とガイド
 
     # Gemini モデルを設定
     model = genai.GenerativeModel("gemini-2.5-flash-lite")
-    prompt = f"あなたは観光案内役です。以下の情報をもとに、日本の現在地と名物を紹介してください：\n- 現在地: {address}\n- 紹介文は15文字程度\n- 口調は「現在地は～、名物は～でございます」の形式"
+    prompt = f"""
+あなたは観光案内役です。
+以下の住所情報から、日本語で観光案内を1文だけ生成してください。
+出力形式は **必ずこの形** に従ってください：
+
+「現在地は〇〇、名物は〇〇でございます。」
+
+・15文字程度
+・余計な説明や前置き（承知しました等）は不要
+・上記形式以外の文章は出力しないこと
+
+住所情報: {address}
+"""
+
     response = model.generate_content(
-    prompt,
-    generation_config=genai.types.GenerationConfig(
-        # Only one candidate for now.
-        candidate_count=1,
-        max_output_tokens=20,
-        temperature=0.,
-    ),
-)
+        prompt,
+        generation_config=genai.types.GenerationConfig(
+            candidate_count=1,
+            max_output_tokens=30,
+            temperature=0.2,
+        ),
+    )
+
     return response.text
 # 使用例
 #print(coordinates2guid(34.07, 132.99))
